@@ -1,4 +1,4 @@
-# bin
+# sc00bin
 bin scripts that I made
 
 ### Contents:
