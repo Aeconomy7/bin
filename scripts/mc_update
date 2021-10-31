@@ -20,15 +20,32 @@ fi
 
 
 # set the new file version
-CURR_VER=`curl -s https://www.minecraft.net/en-us/download/server/ | grep minecraft_server | awk '{ print $1 }' | tail -c +3 | tr -d '\r\n'`
+# OLD AND BROKEN, left here as an artifact
+#CURR_VER=`curl -s https://www.minecraft.net/en-us/download/server | grep minecraft_server | awk '{ print $1 }' | tail -c +3 | tr -d '\r\n'`
+#OLD_VER=`cat /home/sc00by/bin/OMG_LETS_PLAY_MINECRAFT | grep java | awk '{ print $5}'`
+#DL_LINK=`curl -s https://www.minecraft.net/en-us/download/server | grep https://launcher.mojang.com/v1/objects/ | sed -r 's/.*href="([^"]+).*/\1/g'`
+
+# NEW AND SHINY, and hopefully more stabled
+echo -n "$MAGENTA"
+echo "[?] Checking current build hosted by mojang..."
+echo -n "$NORMAL"
+CURR_VER=`curl -s https://launchermeta.mojang.com/mc/game/version_manifest.json | jq '.latest.release' | tr -d '"'`
+CURR_REPO=`curl -s https://launchermeta.mojang.com/mc/game/version_manifest.json | jq '.versions[].url' | grep $CURR_VER.json | tr -d '"'`
+SERVER_JAR=`curl -s https://launchermeta.mojang.com/v1/packages/59734133c4768dd79fa3c9b7a7650a713a8d294a/1.17.1.json | jq '.downloads[].url' | grep server.jar | tr -d '"'`
 OLD_VER=`cat /home/sc00by/bin/OMG_LETS_PLAY_MINECRAFT | grep java | awk '{ print $5}'`
-DL_LINK=`curl -s https://www.minecraft.net/en-us/download/server/ | grep https://launcher.mojang.com/v1/objects/ | sed -r 's/.*href="([^"]+).*/\1/g'`
+
+
+# Debug statement (will be needed if they change the server.jar page)
+CURR_VER_FULL=`echo "minecraft_server.$CURR_VER.jar"`
+echo "$CURR_VER_FULL vs $OLD_VER"
 
 # check if we are already up to date
-if [ "$CURR_VER" == "$OLD_VER" ]
+if [ "$CURR_VER_FULL" == "$OLD_VER" ]
 then
 	echo -n "$GREEN"
-	echo "[+] The server is already up to date on version $OLD_VER"
+	echo -n "[+] The server is already up to date on version "
+	echo -n "$CYAN"
+	echo "$OLD_VER"
 	echo -n "$NORMAL"
 	exit 1
 fi
@@ -45,12 +62,12 @@ echo "$OLD_VER"
 echo -n "$CYAN"
 echo -n "New update version:		"
 echo -n "$NORMAL"
-echo "$CURR_VER"
+echo "$CURR_VER_FULL"
 
 echo -n "$CYAN"
 echo -n "Link to be downloaded:		"
 echo -n "$NORMAL"
-echo "$DL_LINK"
+echo "$SERVER_JAR"
 
 echo "$MAGENTA"
 echo -n "Does this look correct? (y/n): "
@@ -75,20 +92,20 @@ esac
 
 # ok download the new server file and properly name it
 echo -n "$GREEN"
-echo "[+] Downloading new version from https://www.minecraft.net/en-us/download/server/"
+echo "[+] Downloading new version from $SERVER_JAR"
 echo -n "$NORMAL"
-wget $DL_LINK
+wget $SERVER_JAR
 sleep 1
 
 echo -n "$GREEN"
 echo "[+] Renaming server.jar to $CURR_VER"
 echo -n "$NORMAL"
-mv server.jar $CURR_VER
+mv server.jar $CURR_VER_FULL
 
 # update the server run script
 echo -n "$GREEN"
 echo "[+] Updating 'OMG_LETS_PLAY_MINECRAFT'"
-sed -i "s;java.*;java -Xmx1024M -Xms1024M -jar $CURR_VER nogui;" /home/sc00by/bin/OMG_LETS_PLAY_MINECRAFT
+sed -i "s;java.*;java/jdk-16.0.1/bin/java -Xmx4096M -Xms4096M -jar $CURR_VER_FULL nogui;" /home/sc00by/bin/OMG_LETS_PLAY_MINECRAFT
 echo "[+] COMPLETED UPDATE :)"
 echo -n "$NORMAL"
 
