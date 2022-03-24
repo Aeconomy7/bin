@@ -31,13 +31,14 @@ echo "[?] Checking current build hosted by mojang..."
 echo -n "$NORMAL"
 CURR_VER=`curl -s https://launchermeta.mojang.com/mc/game/version_manifest.json | jq '.latest.release' | tr -d '"'`
 CURR_REPO=`curl -s https://launchermeta.mojang.com/mc/game/version_manifest.json | jq '.versions[].url' | grep $CURR_VER.json | tr -d '"'`
-SERVER_JAR=`curl -s https://launchermeta.mojang.com/v1/packages/59734133c4768dd79fa3c9b7a7650a713a8d294a/1.17.1.json | jq '.downloads[].url' | grep server.jar | tr -d '"'`
+SERVER_JAR=`curl -s $CURR_REPO | jq '.downloads[].url' | grep server.jar | tr -d '"'`
 OLD_VER=`cat /home/sc00by/bin/OMG_LETS_PLAY_MINECRAFT | grep java | awk '{ print $5}'`
 
 
 # Debug statement (will be needed if they change the server.jar page)
 CURR_VER_FULL=`echo "minecraft_server.$CURR_VER.jar"`
 echo "$CURR_VER_FULL vs $OLD_VER"
+echo "[DEBUG] CURR_REPO to download: $CURR_REPO"
 
 # check if we are already up to date
 if [ "$CURR_VER_FULL" == "$OLD_VER" ]
@@ -105,7 +106,7 @@ mv server.jar $CURR_VER_FULL
 # update the server run script
 echo -n "$GREEN"
 echo "[+] Updating 'OMG_LETS_PLAY_MINECRAFT'"
-sed -i "s;java.*;java/jdk-16.0.1/bin/java -Xmx4096M -Xms4096M -jar $CURR_VER_FULL nogui;" /home/sc00by/bin/OMG_LETS_PLAY_MINECRAFT
+sed -i "s;java.*;/home/sc00by/java/jdk-17/bin/java -Xmx4096M -Xms4096M -jar $CURR_VER_FULL nogui;" /home/sc00by/bin/OMG_LETS_PLAY_MINECRAFT
 echo "[+] COMPLETED UPDATE :)"
 echo -n "$NORMAL"
 

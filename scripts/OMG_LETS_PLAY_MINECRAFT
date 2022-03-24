@@ -6,7 +6,14 @@ echo "Choose which world to launch:"
 echo
 echo "  (1): world"
 echo "  (2): world2"
-echo "  (2): world3"
+echo "  (3): world3"
+echo "  (4): coronavirus world"
+echo "  (5): supercoronaworld2"
+echo "  (6): TRTWorld"
+echo "  (7): Hardcore1"
+echo "  (8): PepeLand"
+echo "  (9): MONKEY_ISLAND_SUMMER_ADVENTURE"
+echo "  (a): CRAB_LAND"
 echo
 echo -n "SELECT: "
 read choice
@@ -24,6 +31,27 @@ case "$choice" in
 	[3])
                 sed -i 's;level-name=.*;level-name=world3;' server.properties
                 ;;
+	[4])
+		sed -i 's;level-name=.*;level-name=coronavirus;' server.properties
+                ;;
+	[5])
+		sed -i 's;level-name=.*;level-name=supercoronaworld2;' server.properties
+		;;
+	[6])
+		sed -i 's;level-name=.*;level-name=TRTWorld;' server.properties
+		;;
+	[7])
+		sed -i 's;level-name=.*;level-name=Hardcore1;' server.properties
+		;;
+	[8])
+		sed -i 's;level-name=.*;level-name=PepeLand;' server.properties
+		;;
+	[9])
+		sed -i 's;level-name=.*;level-name=MONKEY_ISLAND_SUMMER_ADVENTURE;' server.properties
+		;;
+	['a'])
+		sed -i 's;level-name=.*;level-name=CRAB_LAND;' server.properties
+		;;
 	*)
 		echo "Ayyyy lmao you can't choose '$choice'"
 		echo "cya sucker!"
@@ -31,6 +59,6 @@ case "$choice" in
 esac
 
 # RUN THE GAME!!!
-java -Xmx1024M -Xms1024M -jar minecraft_server.1.15.2.jar nogui
+/home/sc00by/java/jdk-17/bin/java -Xmx4096M -Xms4096M -jar minecraft_server.1.18.2.jar nogui
 
 cd -
